@@ -92,78 +92,22 @@ func (fakeBroker *FakeServiceBroker) Services(ctx context.Context) ([]brokerapi.
 
 	return []brokerapi.Service{
 		{
-			ID:            fakeBroker.ServiceID,
-			Name:          "p-cassandra",
+			ID:            "ff32ea32-cbe1-490d-a379-94b80b75d152",
+			Name:          "cdr-services",
 			Description:   "Cassandra service for application development and testing",
 			Bindable:      true,
 			PlanUpdatable: true,
 			Plans: []brokerapi.ServicePlan{
 				{
-					ID:          fakeBroker.PlanID,
-					Name:        "default",
-					Description: "The default Cassandra plan",
-					Metadata: &brokerapi.ServicePlanMetadata{
-						Bullets:     []string{},
-						DisplayName: "Cassandra",
-					},
-					MaintenanceInfo: &brokerapi.MaintenanceInfo{
-						Public: map[string]string{
-							"name": "foo",
-						},
-					},
-					Schemas: &brokerapi.ServiceSchemas{
-						Instance: brokerapi.ServiceInstanceSchema{
-							Create: brokerapi.Schema{
-								Parameters: map[string]any{
-									"$schema": "http://json-schema.org/draft-04/schema#",
-									"type":    "object",
-									"properties": map[string]any{
-										"billing-account": map[string]any{
-											"description": "Billing account number used to charge use of shared fake server.",
-											"type":        "string",
-										},
-									},
-								},
-							},
-							Update: brokerapi.Schema{
-								Parameters: map[string]any{
-									"$schema": "http://json-schema.org/draft-04/schema#",
-									"type":    "object",
-									"properties": map[string]any{
-										"billing-account": map[string]any{
-											"description": "Billing account number used to charge use of shared fake server.",
-											"type":        "string",
-										},
-									},
-								},
-							},
-						},
-						Binding: brokerapi.ServiceBindingSchema{
-							Create: brokerapi.Schema{
-								Parameters: map[string]any{
-									"$schema": "http://json-schema.org/draft-04/schema#",
-									"type":    "object",
-									"properties": map[string]any{
-										"billing-account": map[string]any{
-											"description": "Billing account number used to charge use of shared fake server.",
-											"type":        "string",
-										},
-									},
-								},
-							},
-						},
-					},
+					ID:          "5bd12fff-a293-4f3a-a6c1-670defbee447",
+					Name:        "system-admin",
+					Description: "Manage instance or subscription pairs",
 				},
-			},
-			Metadata: &brokerapi.ServiceMetadata{
-				DisplayName:      "Cassandra",
-				LongDescription:  "Long description",
-				DocumentationUrl: "http://thedocs.com",
-				SupportUrl:       "http://helpme.no",
-			},
-			Tags: []string{
-				"pivotal",
-				"cassandra",
+				{
+					ID:          "900ee451-e082-4b61-9157-03c095c7e884",
+					Name:        "internal-component",
+					Description: "Plan for communication between CDR internal components",
+				},
 			},
 		},
 	}, nil
@@ -299,7 +243,7 @@ func (fakeBroker *FakeServiceBroker) Deprovision(context context.Context, instan
 	if _, ok := fakeBroker.ProvisionedInstances[instanceID]; ok {
 		return brokerapi.DeprovisionServiceSpec{}, nil
 	}
-	return brokerapi.DeprovisionServiceSpec{IsAsync: false}, brokerapi.ErrInstanceDoesNotExist
+	return brokerapi.DeprovisionServiceSpec{IsAsync: false}, nil
 }
 
 func (fakeBroker *FakeAsyncOnlyServiceBroker) Deprovision(context context.Context, instanceID string, details brokerapi.DeprovisionDetails, asyncAllowed bool) (brokerapi.DeprovisionServiceSpec, error) {
@@ -437,10 +381,10 @@ func (fakeBroker *FakeServiceBroker) Unbind(context context.Context, instanceID,
 		if _, ok := fakeBroker.BoundBindings[bindingID]; ok {
 			return brokerapi.UnbindSpec{}, nil
 		}
-		return brokerapi.UnbindSpec{}, brokerapi.ErrBindingDoesNotExist
+		return brokerapi.UnbindSpec{}, nil
 	}
 
-	return brokerapi.UnbindSpec{}, brokerapi.ErrInstanceDoesNotExist
+	return brokerapi.UnbindSpec{}, nil
 }
 
 func (fakeBroker *FakeServiceBroker) LastBindingOperation(context context.Context, instanceID, bindingID string, details brokerapi.PollDetails) (brokerapi.LastOperation, error) {
@@ -453,7 +397,7 @@ func (fakeBroker *FakeServiceBroker) LastBindingOperation(context context.Contex
 		return brokerapi.LastOperation{}, fakeBroker.LastBindingOperationError
 	}
 
-	return brokerapi.LastOperation{State: fakeBroker.LastOperationState, Description: fakeBroker.LastOperationDescription}, nil
+	return brokerapi.LastOperation{State: brokerapi.Succeeded, Description: fakeBroker.LastOperationDescription}, nil
 }
 
 func (fakeBroker *FakeServiceBroker) LastOperation(context context.Context, instanceID string, details brokerapi.PollDetails) (brokerapi.LastOperation, error) {
@@ -468,7 +412,7 @@ func (fakeBroker *FakeServiceBroker) LastOperation(context context.Context, inst
 		return brokerapi.LastOperation{}, fakeBroker.LastOperationError
 	}
 
-	return brokerapi.LastOperation{State: fakeBroker.LastOperationState, Description: fakeBroker.LastOperationDescription}, nil
+	return brokerapi.LastOperation{State: brokerapi.Succeeded, Description: fakeBroker.LastOperationDescription}, nil
 }
 
 type FakeCredentials struct {
